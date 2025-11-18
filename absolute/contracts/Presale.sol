@@ -12,5 +12,5 @@ contract Presale is Ownable {
   bool public transfersUnlocked;
 
 
-  
+  mapping(address => uint256) public purchasedTokens;
 }
