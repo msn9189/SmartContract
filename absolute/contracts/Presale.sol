@@ -13,4 +13,10 @@ contract Presale is Ownable {
 
 
   mapping(address => uint256) public purchasedTokens;
+
+  event Bought(address indexed buyer, uint amountETH, uint256 tokens);
+  event WithdrawETH(address indexed owner, uint256 amount);
+  event UnlockTransfers();
+
+  
 }
