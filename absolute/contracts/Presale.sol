@@ -18,5 +18,21 @@ contract Presale is Ownable {
   event WithdrawETH(address indexed owner, uint256 amount);
   event UnlockTransfers();
 
-  
+  constructor(
+    address tokenAdress,
+    uint256 _tokenPrice,
+    uint256 _startTime, 
+    uint256 _endTime, 
+    uint256 _minPurchase
+    ) {
+      require(_startTime < _endTime, "Start must be before end time");
+      token = IERC20(tokenAdress);
+      tokenPrice = _tokenPrice;
+      startTime = _startTime;
+      endTime = _endTime;
+      minPurchase = _minPurchase;
+      transfersUnlocked = false;
+    }
+
+    
 }
