@@ -63,13 +63,13 @@ contract Presale is Ownable {
     emit WithdrawETH(to, balance);
   }
 
-function claimTokens() external {
+  function claimTokens() external {
   require(block.timestamp > endTime || transfersUnlocked == true, "Claim not allowed yet");
   uint256 amount = purchasedTokens[msg.sender];
   require(amount > 0, "No tokens to claim");
   purchasedTokens[msg.sender] = 0;
   require(token.transfer(msg.sender, amount), "Token transfer failed");
-}
+  }
 
 }
 
