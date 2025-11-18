@@ -16,7 +16,7 @@ contract Presale is Ownable {
 
   event Bought(address indexed buyer, uint amountETH, uint256 tokens);
   event WithdrawETH(address indexed owner, uint256 amount);
-  event UnlockTransfers();
+  event TransfersUnlocked();
 
   constructor(
       address tokenAdress,
@@ -50,12 +50,12 @@ contract Presale is Ownable {
       emit Bought(msg.sender, msg.value, tokensToReceive);
   }
 
-  function UnlockTransfers() external onlyOwner {
+  function unlockTransfers() external onlyOwner {
     transfersUnlocked = true;
-    emit UnlockTransfers();
+    emit TransfersUnlocked();
   }
 
-  function WithdrawETH(address payable to) external onlyOwner {
+  function withdrawETH(address payable to) external onlyOwner {
     require(block.timestamp > endTime, "Presale not ended");
     uint256 balance = address(this).balance;
     require(balance > 0, "No ETH to withdraw");
