@@ -32,13 +32,13 @@ contract Presale is Ownable {
       endTime = _endTime;
       minPurchase = _minPurchase;
       transfersUnlocked = false;
-    }
+  }
     
     
   modifier onlyWhileOpen() {
       require(block.timestamp >= startTime && block.timestamp <= endTime, "Presale closed");
       _;
-    }
+  }
 
   function buyTokens() external payable onlyWhileOpen {
       require(msg.value >= minPurchase, "Below minimum purchase");
@@ -48,7 +48,7 @@ contract Presale is Ownable {
       purchasedTokens[msg.sender] += tokensToReceive;
 
       emit Bought(msg.sender, msg.value, tokensToReceive);
-    }
+  }
 
   function UnlockTransfers() external onlyOwner {
     transfersUnlocked = true;
@@ -63,8 +63,13 @@ contract Presale is Ownable {
     emit WithdrawETH(to, balance);
   }
 
-
-
+function claimTokens() external {
+  require(block.timestamp > endTime || transfersUnlocked == true, "Claim not allowed yet");
+  uint256 amount = purchasedTokens[msg.sender];
+  require(amount > 0, "No tokens to claim");
+  purchasedTokens[msg.sender] = 0;
+  require(token.transfer(msg.sender, amount), "Token transfer failed");
+}
 
 }
 
