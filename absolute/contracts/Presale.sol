@@ -3,19 +3,14 @@ pragma solidity ^0.8.28;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Counter {
-  uint public x;
+contract Presale is Ownable {
+  IERC20 public token;
+  uint256 public tokenPrice;
+  uint256 public startTime;
+  uint256 public endTime;
+  uint256 public minPurchase;
+  bool public transfersUnlocked;
 
-  event Increment(uint by);
 
-  function inc() public {
-    x++;
-    emit Increment(1);
-  }
-
-  function incBy(uint by) public {
-    require(by > 0, "incBy: increment should be positive");
-    x += by;
-    emit Increment(by);
-  }
+  
 }
