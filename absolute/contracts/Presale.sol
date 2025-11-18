@@ -18,13 +18,7 @@ contract Presale is Ownable {
   event WithdrawETH(address indexed owner, uint256 amount);
   event UnlockTransfers();
 
-  constructor(
-    address tokenAdress,
-    uint256 _tokenPrice,
-    uint256 _startTime, 
-    uint256 _endTime, 
-    uint256 _minPurchase
-    ) {
+  constructor(address tokenAdress, uint256 _tokenPrice, uint256 _startTime, uint256 _endTime, uint256 _minPurchase){
       require(_startTime < _endTime, "Start must be before end time");
       token = IERC20(tokenAdress);
       tokenPrice = _tokenPrice;
@@ -33,8 +27,24 @@ contract Presale is Ownable {
       minPurchase = _minPurchase;
       transfersUnlocked = false;
     }
-
-    modifier onlyWhileOpen() {
+    
+    
+  modifier onlyWhileOpen() {
       require(block.timestamp >= startTime && block.timestamp <= endTime, "Presale closed");
+      _;
     }
-}
+
+  function buyTokens() external payable onlyWhileOpen {
+      require(msg.value >= minPurchase, "Below minimum purchase");
+      uint256 tokensToReceive = (msg.value * (10 ** 18)) / tokenPrice;
+      require(token.balanceOf(address(this)) >= tokensToReceive, "Not enough tokens in presale contract");
+
+      purchasedTokens[msg.sender] += tokensToReceive;
+
+      emit Bought(msg.sender, msg.value, tokensToReceive);
+    }
+  
+    }
+
+    
+    
