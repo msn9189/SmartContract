@@ -34,5 +34,7 @@ contract Presale is Ownable {
       transfersUnlocked = false;
     }
 
-    
+    modifier onlyWhileOpen() {
+      require(block.timestamp >= startTime && block.timestamp <= endTime, "Presale closed");
+    }
 }
