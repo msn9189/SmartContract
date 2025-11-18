@@ -55,7 +55,15 @@ contract Presale is Ownable {
     emit UnlockTransfers();
   }
 
-  
+  function WithdrawETH(address payable to) external onlyOwner {
+    require(block.timestamp > endTime, "Presale not ended");
+    uint256 balance = address(this).balance;
+    require(balance > 0, "No ETH to withdraw");
+    to.transfer(balance);
+    emit WithdrawETH(to, balance);
+  }
+
+
 
 
 }
