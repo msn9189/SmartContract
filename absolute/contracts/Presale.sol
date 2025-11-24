@@ -7,25 +7,37 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
- * @title SecureTokenPresale
- * @dev A secure presale contract with advanced features including pause, hard cap, and max purchase limits
+ * @title TokenPresale
+ * @author 
+ * @notice A secure, pausable, hard-capped token presale with per-wallet limits and emergency controls
+ * @dev Tokens are allocated at a fixed rate (tokens per ETH). Users can claim after endTime or when force claim is enabled 
  */
 contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     IERC20 public immutable token;
 
-    // قیمت به صورت: توکن به ازای هر ETH (مثلاً 5000 توکن = 5000e18)
-    uint256 public immutable rate; // tokens per ETH (with 18 decimals)
+    /// @notice Rate of tokens per 1 ETH (with 18 decimals). Example: 1000e18 = 1000 tokens per ETH
+    uint256 public immutable rate;
 
+    /// @notice Unix timestamp when the presale starts
     uint256 public immutable startTime;
+    /// @notice Unix timestamp when the presale ends
     uint256 public immutable endTime;
-    uint256 public immutable minPurchase; // in wei
-    uint256 public immutable maxPurchase; // in wei, 0 = no limit
-    uint256 public immutable hardCap;     // حداکثر ETH قابل جمع‌آوری
 
+    /// @notice Minimum ETH (in wei) a user must send in one transaction
+    uint256 public immutable minPurchase;
+    /// @notice Maximum  ETH (in wei) a user can contribute in total. 0 = no limit
+    uint256 public immutable maxPurchase;
+    /// @notice Hard cap in ETH. Total raised cannot exceed this. 0 = no hard cap
+    uint256 public immutable hardCap; 
+
+    /// @notice Total ETH raised during presale
     uint256 public totalRaised;
+    /// @notice Allows owner to enable claiming before presale ends
     bool public forceClaimEnabled = false;
 
+    /// @notice Amount of ETH contributed by each address
     mapping(address => uint256) public contributions;
+    /// @notice Tracks which addresses have already claimed their tokens.
     mapping(address => bool) public hasClaimed;
 
     event TokensPurchased(address indexed buyer, uint256 ethAmount, uint256 tokenAmount);
