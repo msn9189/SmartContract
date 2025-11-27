@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
  * @notice A secure, pausable, hard-capped token presale with per-wallet limits and emergency controls
  * @dev Tokens are allocated at a fixed rate (tokens per ETH). Users can claim after endTime or when force claim is enabled 
  */
-contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
+contract TokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     IERC20 public immutable token;
 
     /// @notice Rate of tokens per 1 ETH (with 18 decimals). Example: 1000e18 = 1000 tokens per ETH
