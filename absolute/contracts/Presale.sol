@@ -40,10 +40,19 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     /// @notice Tracks which addresses have already claimed their tokens.
     mapping(address => bool) public hasClaimed;
 
+    /// @notice Emitted when a user purchases tokens
     event TokensPurchased(address indexed buyer, uint256 ethAmount, uint256 tokenAmount);
+
+    /// @notice Emitted when a user claims tokens
     event Claimed(address indexed user, uint256 amount);
+
+    /// @notice Emitted when owner enables force claim
     event ForceClaimEnabled();
+
+    /// @notice Emitted during emergency ETH withdrawal
     event EmergencyWithdrawETH(address indexed to, uint256 amount);
+
+    /// @notice Emitted during emergency token withdrawal
     event EmergencyWithdrawTokens(address indexed token, address indexed to, uint256 amount);
 
     error InvalidTokenAddress();
@@ -64,6 +73,17 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     error TransferFailed();
     error InvalidAddress();
 
+
+    /**
+     * @dev Deploys the presale with fixed parameters
+     * @param _token Address of the ERC20 token suring sale
+     * @param _rate Tokens per 1 ETH (with 18 decimals)
+     * @param _startTime Unix timestamp when sale starts
+     * @param _endTime Unix timestamp when sale ends
+     * @param _minPurchase Minimum ETH per wallet (in wei)
+     * @param _maxPurchase Max ETH per wallet (0 = unlimited)
+     * @param _hardCap Maximum ETH to raise (0 = no cap)
+     */
     constructor(
         address _token,
         uint256 _rate,           // مثلاً 5000e18 یعنی 5000 توکن به ازای 1 ETH
@@ -87,6 +107,7 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
         hardCap = _hardCap;
     }
 
+    /// @notice Ensures the presale is active and not paused
     modifier whenSaleActive() {
         if (block.timestamp < startTime || block.timestamp > endTime) {
             revert SaleNotActive();
@@ -98,7 +119,8 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     }
 
     /**
-     * @dev Allows users to buy tokens during the presale period
+     * @dev Allows users to buy tokens during the presale period. Reverts is min/max limits or hard cap would be exceeded.
+     * @notice Purchase tokens by sending ETH during the active presale period.
      */
     function buyTokens() external payable whenSaleActive whenNotPaused nonReentrant {
         if (msg.value < minPurchase) revert BelowMinPurchase();
@@ -150,7 +172,7 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     }
 
     /**
-     * @dev Allows owner to enable force claim before presale ends
+     * @dev Allows owner to enable force claim before presale ends. Useful if presale sells out early or for emergency disctribution
      */
     function enableForceClaim() external onlyOwner {
         forceClaimEnabled = true;
@@ -214,7 +236,7 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     }
 
     /**
-     * @dev Returns the pending tokens for a user
+     * @dev Returns how many tokens a user can still claim
      * @param user Address of the user
      * @return Amount of pending tokens
      */
@@ -224,7 +246,7 @@ contract SecureTokenPresale is Ownable2Step, ReentrancyGuard, Pausable {
     }
 
     /**
-     * @dev Internal function to calculate total pending tokens
+     * @dev Internal function to calculate total unclaimed tokens
      */
     function _pendingTokens() internal view returns (uint256) {
         return (totalRaised * rate) / 1e18;
