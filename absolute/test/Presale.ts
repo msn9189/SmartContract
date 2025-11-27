@@ -10,7 +10,8 @@ describe("TokenPresale", function () {
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
-    const token = await ethers.deployContract("MockToken");
+    const token = await ethers.deployContract("MockToken", ["MockToken","MTK"]);
+    await token.waitForDeployment();
     const TokenPresale = await ethers.deployContract("PresaleToken");
   });
-});
+});  
