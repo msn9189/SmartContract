@@ -18,8 +18,8 @@ describe("TokenPresale", function () {
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
-    token = await ethers.deployContract("MockToken", ["MockToken", "MTK"]);
-    token.waitForDeployment();
+    token = await ethers.deployContract("MockToken");
+    await token.waitForDeployment();
     tokenAddress = await token.getAddress();
     TokenPresale = await ethers.deployContract("TokenPresale", [
       tokenAddress,
@@ -64,7 +64,6 @@ describe("TokenPresale", function () {
     });
   });
 
-
   describe("Buying Tokens", () => {
     it("Should allow users to buy tokens", async () => {
       await expect(
@@ -80,36 +79,42 @@ describe("TokenPresale", function () {
 
     it("Should revert if user sends less than min purchase", async () => {
       await expect(
-        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("0.09") })
+        TokenPresale.connect(user1).buyTokens({
+          value: ethers.parseEther("0.09"),
+        })
       ).to.be.revertedWithCustomError(TokenPresale, "BelowMinPurchase");
     });
 
     it("Should revert if user sends more than max purchase", async () => {
       await expect(
-        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
+        TokenPresale.connect(user1).buyTokens({
+          value: ethers.parseEther("11"),
+        })
       ).to.be.revertedWithCustomError(TokenPresale, "ExceedsMaxPurchase");
     });
 
     it("Should revert if user sends more than hard cap", async () => {
       await expect(
-        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
+        TokenPresale.connect(user1).buyTokens({
+          value: ethers.parseEther("11"),
+        })
       ).to.be.revertedWithCustomError(TokenPresale, "HardCapReached");
     });
 
     it("Should revert if user sends more than token balance", async () => {
       await expect(
-        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
+        TokenPresale.connect(user1).buyTokens({
+          value: ethers.parseEther("11"),
+        })
       ).to.be.revertedWithCustomError(TokenPresale, "InsufficientTokens");
     });
-    
-    
   });
 
   describe("Claiming Tokens", () => {
     it("Should allow users to claim tokens", async () => {
-      await expect(
-        TokenPresale.connect(user1).claimTokens()
-      ).to.emit(TokenPresale, "Claimed").withArgs(user1.address, ethers.parseUnits("2000", 18));
+      await expect(TokenPresale.connect(user1).claimTokens())
+        .to.emit(TokenPresale, "Claimed")
+        .withArgs(user1.address, ethers.parseUnits("2000", 18));
     });
 
     it("Should revert if user has not purchased any tokens", async () => {
@@ -118,5 +123,4 @@ describe("TokenPresale", function () {
       ).to.be.revertedWithCustomError(TokenPresale, "NoContribution");
     });
   });
-
 });
