@@ -70,7 +70,11 @@ describe("TokenPresale", function () {
       await expect(TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("1") })).to.emit(TokenPresale, "TokensPurchased").withArgs(user1.address, ethers.parseEther("1"), ethers.parseUnits("2000", 18));
     });
 
-    
+    it("Should revert if user sends less than min purchase", async () => {
+      await expect(
+        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("0.09") })
+      ).to.be.revertedWithCustomError(TokenPresale, "BelowMinPurchase");
+    });
     
     
   });
