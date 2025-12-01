@@ -105,6 +105,13 @@ describe("TokenPresale", function () {
     
   });
 
-  describe("Claiming Tokens", () => {});
+  describe("Claiming Tokens", () => {
+    it("Should allow users to claim tokens", async () => {
+      await expect(
+        TokenPresale.connect(user1).claimTokens()
+      ).to.emit(TokenPresale, "Claimed").withArgs(user1.address, ethers.parseUnits("2000", 18));
+    });
+
+  });
 
 });
