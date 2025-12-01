@@ -13,13 +13,12 @@ describe("TokenPresale", function () {
   let TokenPresale: any;
   let presaleAddress: any;
 
-  
   const startTime = BigInt("1764227834");
   const endTime = BigInt("1764400634");
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
-    token = await ethers.deployContract("MockToken", ["MockToken","MTK"]);
+    token = await ethers.deployContract("MockToken", ["MockToken", "MTK"]);
     token.waitForDeployment();
     tokenAddress = await token.getAddress();
     TokenPresale = await ethers.deployContract("TokenPresale", [
@@ -29,37 +28,39 @@ describe("TokenPresale", function () {
       endTime,
       ethers.parseEther("0.1"),
       ethers.parseEther("10"),
-      0
+      0,
     ]);
     await TokenPresale.waitForDeployment();
     presaleAddress = await TokenPresale.getAddress();
   });
 
   describe("Deployment & Initialization", () => {
-
     it("Should set correct contract parameters", async () => {
       expect(await TokenPresale.token()).to.equal(tokenAddress);
       expect(await TokenPresale.rate()).to.equal(ethers.parseUnits("2000", 18));
       expect(await TokenPresale.startTime()).to.equal(startTime);
       expect(await TokenPresale.endTime()).to.equal(endTime);
-      expect(await TokenPresale.minPurchase()).to.equal(ethers.parseEther("0.1"));
-      expect(await TokenPresale.maxPurchase()).to.equal(ethers.parseEther("10"));
+      expect(await TokenPresale.minPurchase()).to.equal(
+        ethers.parseEther("0.1")
+      );
+      expect(await TokenPresale.maxPurchase()).to.equal(
+        ethers.parseEther("10")
+      );
       expect(await TokenPresale.hardCap()).to.equal(0);
     });
 
     it("Should revert if token address is invalid", async () => {
-      await expect(ethers.deployContract("TokenPresale", [
-        ethers.ZeroAddress,
-        ethers.parseUnits("2000", 18),
-        startTime,
-        endTime,
-        ethers.parseEther("0.1"),
-        ethers.parseEther("10"),
-        0
-      ])).to.be.revertedWithCustomError(TokenPresale, "InvalidTokenAddress");
+      await expect(
+        ethers.deployContract("TokenPresale", [
+          ethers.ZeroAddress,
+          ethers.parseUnits("2000", 18),
+          startTime,
+          endTime,
+          ethers.parseEther("0.1"),
+          ethers.parseEther("10"),
+          0,
+        ])
+      ).to.be.revertedWithCustomError(TokenPresale, "InvalidTokenAddress");
     });
-
   });
-
-  
-});  
+});
