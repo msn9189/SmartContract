@@ -13,8 +13,8 @@ describe("TokenPresale", function () {
   let TokenPresale: any;
   let presaleAddress: any;
 
-  const startTime = BigInt("1764227834");
-  const endTime = BigInt("1764400634");
+  const startTime = BigInt("1764579912");
+  const endTime = BigInt("1767085512");
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
