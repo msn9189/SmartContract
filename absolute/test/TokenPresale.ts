@@ -118,11 +118,32 @@ describe("TokenPresale", function () {
     });
 
     it("Should revert if user sends more than token balance", async () => {
+      // Deploy a new contract with higher maxPurchase to allow large purchases
+      const TokenPresaleLimited = await ethers.deployContract("TokenPresale", [
+        tokenAddress,
+        ethers.parseUnits("2000", 18), // rate: 2000 tokens per ETH
+        startTime,
+        endTime,
+        ethers.parseEther("0.1"),
+        ethers.parseEther("1000"), // maxPurchase: 1000 ETH (high enough)
+        ethers.parseEther("0"), // no hardCap
+      ]);
+      await TokenPresaleLimited.waitForDeployment();
+      const presaleLimitedAddress = await TokenPresaleLimited.getAddress();
+
+      // Mint only 1,000,000 tokens (enough for 500 ETH at rate 2000 tokens/ETH)
+      await token.mint(presaleLimitedAddress, ethers.parseUnits("1000000", 18));
+
+      // Try to buy 501 ETH, which requires 1,002,000 tokens (501 * 2000)
+      // But contract only has 1,000,000 tokens, so should revert with InsufficientTokens
       await expect(
-        TokenPresale.connect(user1).buyTokens({
-          value: ethers.parseEther("11"),
+        TokenPresaleLimited.connect(user1).buyTokens({
+          value: ethers.parseEther("501"),
         })
-      ).to.be.revertedWithCustomError(TokenPresale, "InsufficientTokens");
+      ).to.be.revertedWithCustomError(
+        TokenPresaleLimited,
+        "InsufficientTokens"
+      );
     });
   });
 
