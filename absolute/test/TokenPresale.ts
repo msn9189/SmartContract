@@ -32,6 +32,7 @@ describe("TokenPresale", function () {
     ]);
     await TokenPresale.waitForDeployment();
     presaleAddress = await TokenPresale.getAddress();
+    await token.mint(presaleAddress, ethers.parseUnits("1000000", 18));
   });
 
   describe("Deployment & Initialization", () => {
