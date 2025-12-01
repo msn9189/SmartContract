@@ -89,6 +89,12 @@ describe("TokenPresale", function () {
         TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
       ).to.be.revertedWithCustomError(TokenPresale, "ExceedsMaxPurchase");
     });
+
+    it("Should revert if user sends more than hard cap", async () => {
+      await expect(
+        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
+      ).to.be.revertedWithCustomError(TokenPresale, "HardCapReached");
+    });
     
     
   });
