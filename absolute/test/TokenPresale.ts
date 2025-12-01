@@ -105,4 +105,6 @@ describe("TokenPresale", function () {
     
   });
 
+  describe("Claiming Tokens", () => {});
+
 });
