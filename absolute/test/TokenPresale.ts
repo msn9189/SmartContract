@@ -24,7 +24,11 @@ describe("TokenPresale", function () {
       ethers.parseEther("10"),
       0
     ]);
+    await TokenPresale.waitForDeployment();
+    const presaleAddress = await TokenPresale.getAddress();
   });
+
+ 
 
   
 });  
