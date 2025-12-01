@@ -7,15 +7,22 @@ describe("TokenPresale", function () {
   let owner: any;
   let user1: any;
   let user2: any;
+
+  let token: any;
+  let tokenAddress: any;
+  let TokenPresale: any;
+  let presaleAddress: any;
+
+  
   const startTime = BigInt("1764227834");
   const endTime = BigInt("1764400634");
 
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
-    const token = await ethers.deployContract("MockToken", ["MockToken","MTK"]);
-    await token.waitForDeployment();
-    const tokenAddress = await token.getAddress();
-    const TokenPresale = await ethers.deployContract("TokenPresale", [
+    token = await ethers.deployContract("MockToken", ["MockToken","MTK"]);
+    token.waitForDeployment();
+    tokenAddress = await token.getAddress();
+    TokenPresale = await ethers.deployContract("TokenPresale", [
       tokenAddress,
       ethers.parseUnits("2000", 18),
       startTime,
@@ -25,10 +32,14 @@ describe("TokenPresale", function () {
       0
     ]);
     await TokenPresale.waitForDeployment();
-    const presaleAddress = await TokenPresale.getAddress();
+    presaleAddress = await TokenPresale.getAddress();
   });
 
- 
+  describe("Deployment & Initialization", () => {
+    it("Should set correct contract parameters", async () => {
+      expect(await TokenPresale.token()).to.equal(tokenAddress);
+    });
+  });
 
   
 });  
