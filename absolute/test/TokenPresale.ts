@@ -63,4 +63,16 @@ describe("TokenPresale", function () {
       ).to.be.revertedWithCustomError(TokenPresale, "InvalidTokenAddress");
     });
   });
+
+
+  describe("Buying Tokens", () => {
+    it("Should allow users to buy tokens", async () => {
+      await expect(TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("1") })).to.emit(TokenPresale, "TokensPurchased").withArgs(user1.address, ethers.parseEther("1"), ethers.parseUnits("2000", 18));
+    });
+
+    
+    
+    
+  });
+
 });
