@@ -95,11 +95,26 @@ describe("TokenPresale", function () {
     });
 
     it("Should revert if user sends more than hard cap", async () => {
+      // Deploy a new contract with a hardCap of 5 ETH
+      const TokenPresaleWithCap = await ethers.deployContract("TokenPresale", [
+        tokenAddress,
+        ethers.parseUnits("2000", 18),
+        startTime,
+        endTime,
+        ethers.parseEther("0.1"),
+        ethers.parseEther("10"), // maxPurchase: 10 ETH
+        ethers.parseEther("5"), // hardCap: 5 ETH
+      ]);
+      await TokenPresaleWithCap.waitForDeployment();
+      const presaleWithCapAddress = await TokenPresaleWithCap.getAddress();
+      await token.mint(presaleWithCapAddress, ethers.parseUnits("1000000", 18));
+
+      // Try to buy 6 ETH, which exceeds hardCap (5 ETH) but is within maxPurchase (10 ETH)
       await expect(
-        TokenPresale.connect(user1).buyTokens({
-          value: ethers.parseEther("11"),
+        TokenPresaleWithCap.connect(user1).buyTokens({
+          value: ethers.parseEther("6"),
         })
-      ).to.be.revertedWithCustomError(TokenPresale, "HardCapReached");
+      ).to.be.revertedWithCustomError(TokenPresaleWithCap, "HardCapReached");
     });
 
     it("Should revert if user sends more than token balance", async () => {
@@ -112,7 +127,8 @@ describe("TokenPresale", function () {
   });
 
   describe("Claiming Tokens", () => {
-    it("Should allow users to claim tokens", async () => {
+    it("Should allow users to claim tokens after presale ends", async () => {
+      expect(await TokenPresale.block.timestamp).to.be.greaterThan(endTime);
       await expect(TokenPresale.connect(user1).claimTokens())
         .to.emit(TokenPresale, "Claimed")
         .withArgs(user1.address, ethers.parseUnits("2000", 18));
