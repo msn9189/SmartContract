@@ -112,6 +112,11 @@ describe("TokenPresale", function () {
       ).to.emit(TokenPresale, "Claimed").withArgs(user1.address, ethers.parseUnits("2000", 18));
     });
 
+    it("Should revert if user has not purchased any tokens", async () => {
+      await expect(
+        TokenPresale.connect(user1).claimTokens()
+      ).to.be.revertedWithCustomError(TokenPresale, "NoContribution");
+    });
   });
 
 });
