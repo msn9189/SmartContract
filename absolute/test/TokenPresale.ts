@@ -36,6 +36,7 @@ describe("TokenPresale", function () {
   });
 
   describe("Deployment & Initialization", () => {
+
     it("Should set correct contract parameters", async () => {
       expect(await TokenPresale.token()).to.equal(tokenAddress);
       expect(await TokenPresale.rate()).to.equal(ethers.parseUnits("2000", 18));
@@ -45,6 +46,19 @@ describe("TokenPresale", function () {
       expect(await TokenPresale.maxPurchase()).to.equal(ethers.parseEther("10"));
       expect(await TokenPresale.hardCap()).to.equal(0);
     });
+
+    it("Should revert if token address is invalid", async () => {
+      await expect(ethers.deployContract("TokenPresale", [
+        ethers.ZeroAddress,
+        ethers.parseUnits("2000", 18),
+        startTime,
+        endTime,
+        ethers.parseEther("0.1"),
+        ethers.parseEther("10"),
+        0
+      ])).to.be.revertedWithCustomError(TokenPresale, "InvalidTokenAddress");
+    });
+
   });
 
   
