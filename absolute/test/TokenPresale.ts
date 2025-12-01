@@ -95,6 +95,12 @@ describe("TokenPresale", function () {
         TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
       ).to.be.revertedWithCustomError(TokenPresale, "HardCapReached");
     });
+
+    it("Should revert if user sends more than token balance", async () => {
+      await expect(
+        TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("11") })
+      ).to.be.revertedWithCustomError(TokenPresale, "InsufficientTokens");
+    });
     
     
   });
