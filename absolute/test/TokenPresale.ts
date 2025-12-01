@@ -38,6 +38,12 @@ describe("TokenPresale", function () {
   describe("Deployment & Initialization", () => {
     it("Should set correct contract parameters", async () => {
       expect(await TokenPresale.token()).to.equal(tokenAddress);
+      expect(await TokenPresale.rate()).to.equal(ethers.parseUnits("2000", 18));
+      expect(await TokenPresale.startTime()).to.equal(startTime);
+      expect(await TokenPresale.endTime()).to.equal(endTime);
+      expect(await TokenPresale.minPurchase()).to.equal(ethers.parseEther("0.1"));
+      expect(await TokenPresale.maxPurchase()).to.equal(ethers.parseEther("10"));
+      expect(await TokenPresale.hardCap()).to.equal(0);
     });
   });
 
