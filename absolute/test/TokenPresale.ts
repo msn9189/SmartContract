@@ -18,10 +18,13 @@ const { ethers } = await network.connect();
  * 8. Withdraw Tokens 
  */
 
+
 describe("TokenPresale", function () {
+  ///@notice Signers for the test cases
   let owner: any;
   let user1: any;
   let user2: any;
+
 
   let token: any;
   let tokenAddress: any;
@@ -31,6 +34,7 @@ describe("TokenPresale", function () {
   const startTime = BigInt("1764579912");
   const endTime = BigInt("1767085512");
 
+  ///@notice Before each test case, deploy the TokenPresale contract and mint the tokens
   beforeEach(async function () {
     [owner, user1, user2] = await ethers.getSigners();
     token = await ethers.deployContract("MockToken");
@@ -50,7 +54,10 @@ describe("TokenPresale", function () {
     await token.mint(presaleAddress, ethers.parseUnits("1000000", 18));
   });
 
+  
+  ///@notice Test cases for the Deployment & Initialization
   describe("Deployment & Initialization", () => {
+    ///@notice Test case for the correct contract parameters
     it("Should set correct contract parameters", async () => {
       expect(await TokenPresale.token()).to.equal(tokenAddress);
       expect(await TokenPresale.rate()).to.equal(ethers.parseUnits("2000", 18));
@@ -65,6 +72,7 @@ describe("TokenPresale", function () {
       expect(await TokenPresale.hardCap()).to.equal(0);
     });
 
+    ///@notice Test case for the invalid token address
     it("Should revert if token address is invalid", async () => {
       await expect(
         ethers.deployContract("TokenPresale", [
@@ -80,7 +88,9 @@ describe("TokenPresale", function () {
     });
   });
 
+  ///@notice Test cases for the Buying Tokens
   describe("Buying Tokens", () => {
+    ///@notice Test case for the correct contract parameters
     it("Should allow users to buy tokens", async () => {
       await expect(
         TokenPresale.connect(user1).buyTokens({ value: ethers.parseEther("1") })
@@ -93,6 +103,7 @@ describe("TokenPresale", function () {
         );
     });
 
+    ///@notice Test case for the user sending less than min purchase
     it("Should revert if user sends less than min purchase", async () => {
       await expect(
         TokenPresale.connect(user1).buyTokens({
@@ -101,6 +112,7 @@ describe("TokenPresale", function () {
       ).to.be.revertedWithCustomError(TokenPresale, "BelowMinPurchase");
     });
 
+    ///@notice Test case for the user sending more than max purchase
     it("Should revert if user sends more than max purchase", async () => {
       await expect(
         TokenPresale.connect(user1).buyTokens({
@@ -109,8 +121,9 @@ describe("TokenPresale", function () {
       ).to.be.revertedWithCustomError(TokenPresale, "ExceedsMaxPurchase");
     });
 
+    ///@notice Test case for the user sending more than hard cap
     it("Should revert if user sends more than hard cap", async () => {
-      // Deploy a new contract with a hardCap of 5 ETH
+      // Deploy a new contract with a   hardCap of 5 ETH
       const TokenPresaleWithCap = await ethers.deployContract("TokenPresale", [
         tokenAddress,
         ethers.parseUnits("2000", 18),
@@ -132,6 +145,7 @@ describe("TokenPresale", function () {
       ).to.be.revertedWithCustomError(TokenPresaleWithCap, "HardCapReached");
     });
 
+    ///@notice Test case for the user sending more than token balance
     it("Should revert if user sends more than token balance", async () => {
       // Deploy a new contract with higher maxPurchase to allow large purchases
       const TokenPresaleLimited = await ethers.deployContract("TokenPresale", [
@@ -162,7 +176,9 @@ describe("TokenPresale", function () {
     });
   });
 
+  ///@notice Test cases for the Claiming Tokens
   describe("Claiming Tokens", () => {
+    ///@notice Test case for the user claiming tokens after presale ends
     it("Should allow users to claim tokens after presale ends", async () => {
       // First, user1 needs to buy tokens
       await TokenPresale.connect(user1).buyTokens({
@@ -181,6 +197,7 @@ describe("TokenPresale", function () {
         .withArgs(user1.address, ethers.parseUnits("2000", 18));
     });
 
+    ///@notice Test case for the user has not purchased any tokens
     it("Should revert if user has not purchased any tokens", async () => {
    await expect(
      TokenPresale.connect(user1).claimTokens()
