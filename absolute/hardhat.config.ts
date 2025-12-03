@@ -2,6 +2,8 @@ import hardhatToolboxMochaEthersPlugin from "@nomicfoundation/hardhat-toolbox-mo
 import { configVariable, defineConfig } from "hardhat/config";
 import hardhatVerify from "@nomicfoundation/hardhat-verify";
 
+const api =configVariable("ETHERSCAN_API_KEY");
+
 export default defineConfig({
   plugins: [hardhatToolboxMochaEthersPlugin],
   solidity: {
@@ -46,6 +48,11 @@ export default defineConfig({
       chainType: "op",
       url: configVariable("BASE_MAINNET_RPC_URL"),
       accounts: [configVariable("PRIVATE_KEY")],
+    },
+  },
+  verify: {
+    etherscan: {
+      apiKey: api,
     },
   },
 });
