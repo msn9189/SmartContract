@@ -5,7 +5,7 @@ import hardhatVerify from "@nomicfoundation/hardhat-verify";
 const api =configVariable("ETHERSCAN_API_KEY");
 
 export default defineConfig({
-  plugins: [hardhatToolboxMochaEthersPlugin],
+  plugins: [hardhatToolboxMochaEthersPlugin, hardhatVerify],
   solidity: {
     profiles: {
       default: {
