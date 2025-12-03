@@ -167,16 +167,9 @@ describe("TokenPresale", function () {
     });
 
     it("Should revert if user has not purchased any tokens", async () => {
-      // Fast-forward time to after the presale ends
-      const currentBlock = await ethers.provider.getBlock("latest");
-      const timeToIncrease = Number(endTime) - currentBlock!.timestamp + 1;
-      await ethers.provider.send("evm_increaseTime", [timeToIncrease]);
-      await ethers.provider.send("evm_mine", []);
-
-      // Now test claiming without any contribution
-      await expect(
-        TokenPresale.connect(user1).claimTokens()
-      ).to.be.revertedWithCustomError(TokenPresale, "NoContribution");
+   await expect(
+     TokenPresale.connect(user1).claimTokens()
+   ).to.be.revertedWithCustomError(TokenPresale, "NoContribution");
     });
   });
 });
