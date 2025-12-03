@@ -3,6 +3,21 @@ import { network } from "hardhat";
 
 const { ethers } = await network.connect();
 
+/**
+ * @title TokenPresale Test Cases
+ * @author nazii.eth
+ * @notice This file contains the test cases for the TokenPresale contract
+ * Test cases:
+ * 1. Deployment & Initialization
+ * 2. Buying Tokens
+ * 3. Claiming Tokens
+ * 4. Emergency Withdrawal
+ * 5. Emergency Token Withdrawal
+ * 6. Force Claim
+ * 7. Withdraw ETH
+ * 8. Withdraw Tokens 
+ */
+
 describe("TokenPresale", function () {
   let owner: any;
   let user1: any;
